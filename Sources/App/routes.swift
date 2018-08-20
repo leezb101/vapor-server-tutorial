@@ -2,6 +2,24 @@ import Vapor
 
 /// Register your application's routes here.
 public func routes(_ router: Router) throws {
+    
+    router.get("users") { (req) -> Future<View> in
+        return User.query(on: req).all().flatMap({ (users) in
+            let data = ["userlist": users]
+            return try req.view().render("userview", data)
+        })
+    }
+    
+    router.post("users") { (req) -> Future<Response> in
+        return try req.content.decode(User.self).flatMap({ (user) in
+            return user.save(on: req).map({ (_) in
+                return req.redirect(to: "users")
+            })
+        })
+    }
+    
+    #if false
+//  下面的部分是初始学习router和leaf使用的
     router.get("name") { (request) in
         return "Liyiqun"
     }
@@ -27,6 +45,7 @@ public func routes(_ router: Router) throws {
         let developer = Person(name: "Liyiqun", age: 27)
         return try req.view().render("whoamiobj", developer)
     }
+    #endif
 }
 
 struct Person: Content {
