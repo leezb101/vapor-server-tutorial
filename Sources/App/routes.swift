@@ -2,14 +2,34 @@ import Vapor
 
 /// Register your application's routes here.
 public func routes(_ router: Router) throws {
-    // Basic "Hello, world!" example
-    router.get("hello") { req in
-        return "Hello, world!"
+    router.get("name") { (request) in
+        return "Liyiqun"
     }
+    
+    router.get("age") { (req) in
+        return "\(27)"
+    }
+    
+    router.get("json") { (req) in
+        return Person(name: "liyiqun", age: 27)
+    }
+    
+    router.get("view") { (req) -> Future<View> in
+        return try req.view().render("welcome")
+    }
+    
+    router.get("bonus") { (req) -> Future<View> in
+        let data = ["name": "Liyiqun", "age": "27"]
+        return try req.view().render("whoami", data)
+    }
+    
+    router.get("bonus-s") { (req) -> Future<View> in
+        let developer = Person(name: "Liyiqun", age: 27)
+        return try req.view().render("whoamiobj", developer)
+    }
+}
 
-    // Example of configuring a controller
-    let todoController = TodoController()
-    router.get("todos", use: todoController.index)
-    router.post("todos", use: todoController.create)
-    router.delete("todos", Todo.parameter, use: todoController.delete)
+struct Person: Content {
+    var name: String
+    var age: Int
 }
