@@ -11,9 +11,14 @@ public func routes(_ router: Router) throws {
         })
     }
     #endif
+    
     // 以上代码中的closure实现迁移至controllers，改写为
     let userController = UserController()
     router.get("users", use: userController.list)
+    router.post("users", use: userController.create)
+    router.post("users", User.parameter, "update", use: userController.update)
+    router.post("users", User.parameter, "delete", use: userController.delete)
+    
     #if false
     router.post("users") { (req) -> Future<Response> in
         return try req.content.decode(User.self).flatMap({ (user) in
@@ -23,7 +28,6 @@ public func routes(_ router: Router) throws {
         })
     }
     #endif
-    router.post("users", use: userController.create)
     
     
     #if false
