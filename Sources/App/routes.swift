@@ -3,13 +3,18 @@ import Vapor
 /// Register your application's routes here.
 public func routes(_ router: Router) throws {
     
+    #if false
     router.get("users") { (req) -> Future<View> in
         return User.query(on: req).all().flatMap({ (users) in
             let data = ["userlist": users]
             return try req.view().render("userview", data)
         })
     }
-    
+    #endif
+    // 以上代码中的closure实现迁移至controllers，改写为
+    let userController = UserController()
+    router.get("users", use: userController.list)
+    #if false
     router.post("users") { (req) -> Future<Response> in
         return try req.content.decode(User.self).flatMap({ (user) in
             return user.save(on: req).map({ (_) in
@@ -17,6 +22,9 @@ public func routes(_ router: Router) throws {
             })
         })
     }
+    #endif
+    router.post("users", use: userController.create)
+    
     
     #if false
 //  下面的部分是初始学习router和leaf使用的
